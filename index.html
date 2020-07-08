@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="./resources/ol.css">
+        <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+        <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+        <link rel="stylesheet" href="./resources/qgis2web.css">
+		<title>Calidad del aire</title>
+		<script src="moment.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDZ6qyX__4NREcICEqet8cfjY31IBkGvU&signed_in=true"></script>
+		<link rel="stylesheet" type="text/css" href="fnetpublic.css" />
+		<link rel="stylesheet" type="text/css" href="tabledisplay.css" />
+		<style>
+			html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			}
+
+			#container {
+			/*height: 100%;*/
+			}
+
+			#mainContent {
+			height: 100%;
+			}
+
+			#MapGradientHint {
+			height: 100%;
+			}
+
+			#map {
+			margin: 20px;
+			height: 500px;
+			width: 61.8%;
+			box-shadow: 0 10px 6px -6px #777;
+			border-radius: 8px;
+			}
+
+				
+
+			#colorbar {
+			height: 6.18%;
+			text-align: center;
+			}
+
+			#colorbar #time {
+			/*margin-bottom: 10px;*/
+			}
+
+			#colorbar img {
+			width: 50%;
+			height: 100%;
+			}
+		</style>
+		<style>		<!-- Barra de navegacion-->
+body {margin: 0;}
+
+ul.topnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+ul.topnav li {float: left;}
+
+ul.topnav li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+ul.topnav li a:hover:not(.active) {background-color: #111;}
+
+ul.topnav li a.active {background-color: #4CAF50;}
+
+ul.topnav li.right {float: right;}
+
+@media screen and (max-width: 600px) {
+  ul.topnav li.right, 
+  ul.topnav li {float: none;}
+}
+</style>
+		<style>		<!-- Mapa -->
+			.search-layer {
+			top: 65px;
+			left: .5em;
+			}
+			
+			.ol-touch .search-layer {
+			top: 80px;
+			}
+		</style>
+		<style>		<!-- Mapa -->
+			html, body {
+            background-color: #ffffff;
+			}
+			
+			.ol-control button {
+            background-color: #f8f8f8 !important;
+            color: #000000 !important;
+            border-radius: 0px !important;
+			}
+			
+			.ol-zoom, .geolocate, .gcd-gl-control .ol-control {
+            background-color: rgba(255,255,255,.4) !important;
+            padding: 3px !important;
+			}
+			
+			.ol-scale-line {
+            background: none !important;
+			}
+			
+			.ol-scale-line-inner {
+            border: 2px solid #f8f8f8 !important;
+            border-top: none !important;
+            background: rgba(255, 255, 255, 0.5) !important;
+            color: black !important;
+			}
+        </style>
+		<style>		<!-- Mapa -->
+			#map {
+            width: 703px;
+            height: 579px;
+			}
+		</style>
+	</head>
+
+<body style="background-color:#000000;" class="oneColElsCtr">
+<div  style="background-color:white;"id="container">
+<div class="lbg">&nbsp;</div>
+<div class="rbg">&nbsp;</div>
+  <div id="header" align="center">
+        <table style="border:0px">
+	<tbody><tr>
+	<td width="10%" style="border:0px"><a href="https://www.ues.edu.sv/" align="center"><img src="UES.png" alt="Minerva (pero a la izquierda jojo)" height="200" align="absmiddle"></a></td>
+	<td width="80%" style="border:0px"><h1 style="color:black" align="center"><p>Monitoreo de Calidad del Aire</p><p>Universidad de El Salvador</p><p>Campus Central</p></h1></td>
+	<td width="10%" style="border:0px"><a href="https://www.ues.edu.sv/" align="center"><img src="UES.png" alt="Minerva (pero a la derecha jiji)" height="200" align="absmiddle"></a></td>
+	</tr>
+	</tbody></table>
+	<ul class="topnav">
+		<li><a class="active" href="index.html">Calidad del aire</a></li>
+		<li><a href="mapa.html">Mapa</a></li>
+		<li class="right"><a href="https://www.accuweather.com/en/sv/san-salvador/130669/air-quality-index/130669">AQI San Salvador</a></li>
+		<li class="right"><a href="https://docs.google.com/spreadsheets/d/1r62UZE01PXGUKPFiraz35n4CoKRUkhma413a6u4I_1o/edit#gid=0">Registro estación UES</a></li>
+		<li class="right"><a href="https://www.snet.gob.sv/ver/meteorologia/monitoreo/calidad+del+aire/">Calidad del aire MARN</a></li>
+
+	</ul>
+    <!--
+	<table class="navbar">
+        <tbody><tr>
+            <td width="20%" class="navbar" style="font-size:150%; color:black; background-color:#ff9999;" style="text-align:center;"><a href="index.html" class="navbar">Calidad del aire</a></td>
+			<td width="20%" class="navbar" style="font-size:150%; color:black; background-color:#ff9999;"><a href="mapa.html" class="navbar">Mapa de contaminación</a></td>
+            
+           
+        </tr>
+    </tbody></table>
+    -->
+   </div>
+
+   <div id="mainContent" align="center">
+  
+    <div id="MapGradientHint" align="center">
+          <div  style="color:black;" align = "center"><h3>
+				<!-- ESTE ES EL TEXTO Y DEMÁS COSAS ARRIBA DEL MAPA --> 
+				<div id="mainContent">
+    <!--
+	-->
+	<p  style="text-align:center;">
+	La contaminación del aire es un determinante importante para la salud. Numerosos estudios epidemiológicos han encontrado una <br>
+	asociación entre la contaminación del aire y un amplio rango de efectos adversos en la salud de la población general; estos <br>
+	efectos varían desde efectos sutiles subclinicos hasta muerte prematura.</p>
+	
+	<p  style="text-align:center;">
+	Algunos grupos - por ejemplo adultos mayores, niños, mujeres embarazadas y gente con enfermedades crónicas como asma - podrían <br>
+	encontrarse en mayor riesgo, y podrían desarrollar efectos más graves para la salud con mayor facilidad al estar expuestos a <br>
+	polución en el aire. Adicionalmente, ciertos grupos pueden estar expuestos a mayores niveles de polución en el aire exterior, <br>
+	por ejemplo gente viviendo cerca de rutas de tráfico muy utilizadas o aquellos en grupos ocupacionales o socioeconómicos específicos. <br>
+	</p>
+	
+    <h4 style="text-align:left"><a href="image1.png"><img src="image1.png" alt="FDR Map" width="448" height="336" style="float:right; border: 2px solid"></a>
+	<p>
+	La polución en el aire es generalmente una mezcla compleja. Por consiguiente, los impactos <br>
+	adversos en la salud observados en estudios epidemiologicos y atribuídos a contaminantes <br>
+	individuales podría en realidad ser en parte debido a otros contaminantes en la mezcla. <br>
+	Los contaminantes investigados comúnmente en estos estudios - materia particulada (PM), <br>
+	carbón, ozono, dioxido de nitrogeno, oxidos de nitrogeno, dioxido de sulfuro, monoxido de <br>
+	carbono, metales pesados o humo - podrían ser representantes de la mezcla contaminante en <br>
+	el aire. 
+	</p>
+	<p>
+	Este problema es particularmente relevante en relación al impacto en la salud de la exposición <br>
+	al PM en el ambiente. El PM se origina de emisiones primarias (fuentes de combustión, tierra <br>
+	suspendida en el aire por vientos) y formación de partículas secundaris en la atmósfera. El PM <br>
+	puede ser caracterizado en términos de concentración de masa de partículas más pequeñas que <br>
+	2.5 µm (PM2.5) o 10 µm (PM10), el número de partículas (ultrafinas)o la composición química <br>
+	(como carbón, compuestos orgánicos o metales pesados). Evidencias epidemiológicas y toxicológicas <br>
+	muestran que la masa de PM (PM2.5, PM10) comprende fracciones con diferentes tipos y grados de <br>
+	efectos en la salud. Diferentes tamaños de particulas, composiciones o características pueden <br>
+	ser relacionados con fuentes específicas de emisiones mejor que otros contaminantes aéreos y <br>
+	pueden entonces ser considerados un mejor indicador.
+	</p>
+	<p>
+	Así, PM10 puede ser un indicador apropiado cuando se considera el impacto de resuspención de <br>
+	polvo de caminos, mientras que el carbón negro es un mejor indicador de emisiones de escape<br>
+	del tráfico. El PM2.5 ha sido investigado en muchos estudios epidemiológicos, y ha mostrado <br>
+	ser un robusto indicador de riesgos asociados con la exposición a PM de diferentes fuentes y <br>
+	en diferentes entornos. La imagen muestra un resumen esquemático de los tamaños relativos de <br>
+	PM10 y PM2.5, en relación al cabello humano y arena fina de playa.
+	</p>
+	</h4> 
+	<br>
+	<p  style="text-align:center;">
+	<p>
+	Aunque se ha hecho mucho para mejorar la calidad del aire, y por consiguiente, la salud humana en varias partes del mundo, <br>
+	evidencia sobre efectos adversos a la salud persisten a niveles por debajo de los estándares de calidad del aire actuales <br>
+	y niveles bajos históricamente de contaminación aérea en varios países. 
+	</p>
+	<p>
+	Adicionalmente, la contaminación del aire es una creciente preocupación en varios países en vías de desarrollo, donde <br>
+	las emisiones han ido incrementado en la ausencia de regulaciones estrictas sobre emisiones y calidad del aire. Esto <br>
+	ha resultado en episodios de calidad de aire pobre, particularmente en áreas urbanas. Estimaciones cuantitativas del <br>
+	impacto en la salud de la polución aérea se han vuelto cada vez más importantes, para permitir a los responsables <br>
+	políticos y otros responsables para implementar leyes y regulaciones de forma local, nacional y globales para reducir <br>
+	la contaminación en el aire.
+	</p>
+	<!--
+	
+	-->
+<div style="clear:both">
+      <br><br>
+	
+<!--
+    &copy; 
+	
+    <script type="text/javascript">
+<!--
+var currentTime = new Date()
+var year = currentTime.getFullYear()
+document.write(year)
+
+
+</script>
+
+    <a href="http://powerit.utk.edu/">Power Information Technology Lab</a> - 
+	<a href="http://www.utk.edu">University of Tennessee</a>
+-->	
+	</h5>
+	</div>
+  <!-- end #mainContent --></div>
+	
+    
+    </div>
+
+<div style="color:black;" align="center">2020</div>
+    <div class="bbg">&nbsp;</div>
+</div>
+</body>
+
+</html>

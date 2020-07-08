@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="./resources/ol.css">
+        <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+        <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+        <link rel="stylesheet" href="./resources/qgis2web.css">
+		<title>Calidad del aire</title>
+		<script src="moment.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDZ6qyX__4NREcICEqet8cfjY31IBkGvU&signed_in=true"></script>
+		<link rel="stylesheet" type="text/css" href="fnetpublic.css" />
+		<link rel="stylesheet" type="text/css" href="tabledisplay.css" />
+		<style>
+			html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			}
+
+			#container {
+			/*height: 100%;*/
+			}
+
+			#mainContent {
+			height: 100%;
+			}
+
+			#MapGradientHint {
+			height: 100%;
+			}
+
+			#map {
+			margin: 20px;
+			height: 500px;
+			width: 61.8%;
+			box-shadow: 0 10px 6px -6px #777;
+			border-radius: 8px;
+			}
+
+				
+
+			#colorbar {
+			height: 6.18%;
+			text-align: center;
+			}
+
+			#colorbar #time {
+			/*margin-bottom: 10px;*/
+			}
+
+			#colorbar img {
+			width: 50%;
+			height: 100%;
+			}
+		</style>
+		<style>		<!-- Barra de navegacion-->
+body {margin: 0;}
+
+ul.topnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+ul.topnav li {float: left;}
+
+ul.topnav li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+ul.topnav li a:hover:not(.active) {background-color: #111;}
+
+ul.topnav li a.active {background-color: #4CAF50;}
+
+ul.topnav li.right {float: right;}
+
+@media screen and (max-width: 600px) {
+  ul.topnav li.right, 
+  ul.topnav li {float: none;}
+}
+</style>
+		<style>		<!-- Mapa -->
+			.search-layer {
+			top: 65px;
+			left: .5em;
+			}
+			
+			.ol-touch .search-layer {
+			top: 80px;
+			}
+		</style>
+		<style>		<!-- Mapa -->
+			html, body {
+            background-color: #ffffff;
+			}
+			
+			.ol-control button {
+            background-color: #f8f8f8 !important;
+            color: #000000 !important;
+            border-radius: 0px !important;
+			}
+			
+			.ol-zoom, .geolocate, .gcd-gl-control .ol-control {
+            background-color: rgba(255,255,255,.4) !important;
+            padding: 3px !important;
+			}
+			
+			.ol-scale-line {
+            background: none !important;
+			}
+			
+			.ol-scale-line-inner {
+            border: 2px solid #f8f8f8 !important;
+            border-top: none !important;
+            background: rgba(255, 255, 255, 0.5) !important;
+            color: black !important;
+			}
+        </style>
+		<style>		<!-- Mapa -->
+			#map {
+            width: 703px;
+            height: 579px;
+			}
+		</style>
+	</head>
+
+<body style="background-color:#000000;" class="oneColElsCtr">
+<div  style="background-color:white;"id="container">
+<div class="lbg">&nbsp;</div>
+<div class="rbg">&nbsp;</div>
+  <div id="header" align="center">
+        <table style="border:0px">
+	<tbody><tr>
+	<td width="10%" style="border:0px"><a href="https://www.ues.edu.sv/" align="center"><img src="UES.png" alt="Minerva (pero a la izquierda jojo)" height="200" align="absmiddle"></a></td>
+	<td width="80%" style="border:0px"><h1 style="color:black" align="center"><p>Monitoreo de Calidad del Aire</p><p>Universidad de El Salvador</p><p>Campus Central</p></h1></td>
+	<td width="10%" style="border:0px"><a href="https://www.ues.edu.sv/" align="center"><img src="UES.png" alt="Minerva (pero a la derecha jiji)" height="200" align="absmiddle"></a></td>
+	</tr>
+	</tbody></table>
+	<ul class="topnav">
+		<li><a href="index.html">Calidad del aire</a></li>
+		<li><a class="active" href="mapa.html">Mapa</a></li>
+		<li class="right"><a href="https://www.accuweather.com/en/sv/san-salvador/130669/air-quality-index/130669">AQI San Salvador</a></li>
+		<li class="right"><a href="https://docs.google.com/spreadsheets/d/1r62UZE01PXGUKPFiraz35n4CoKRUkhma413a6u4I_1o/edit#gid=0">Registro estación UES</a></li>
+		<li class="right"><a href="https://www.snet.gob.sv/ver/meteorologia/monitoreo/calidad+del+aire/">Calidad del aire MARN</a></li>
+
+	</ul>
+    <!--
+	<table class="navbar">
+        <tbody><tr>
+            <td width="20%" class="navbar" style="font-size:150%; color:black; background-color:#ff9999;" style="text-align:center;"><a href="index.html" class="navbar">Calidad del aire</a></td>
+			<td width="20%" class="navbar" style="font-size:150%; color:black; background-color:#ff9999;"><a href="mapa.html" class="navbar">Mapa de contaminación</a></td>
+            
+           
+        </tr>
+    </tbody></table>
+    -->
+   </div>
+
+   <div id="mainContent" align="center">
+  
+    <div id="MapGradientHint" align="center">
+          <div  style="color:black;" align = "center"><h3>
+				<!-- ESTE ES EL TEXTO Y DEMÁS COSAS ARRIBA DEL MAPA --> 
+				<p>Este mapa muestra las concentraciones de PM 2.5, PM10 y temperatura.</p>
+				<p>Seleccione los mapas que desea observar con el botón </p><p><img src="boton.png" alt="boton"></p></h3></div>
+    
+	
+    <div id="map">
+            <div id="popup" class="ol-popup">
+                <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                <div id="popup-content"></div>
+            </div>
+        </div>
+        <script src="resources/qgis2web_expressions.js"></script>
+        <script src="resources/polyfills.js"></script>
+        <script src="./resources/functions.js"></script>
+        <script src="./resources/ol.js"></script>
+        <script src="./resources/ol-layerswitcher.js"></script>
+        <script src="layers/ContornosdePM25_3.js"></script><script src="layers/ContornosdePM10_5.js"></script><script src="layers/Contornosdetemperatura_7.js"></script>
+        <script src="styles/ContornosdePM25_3_style.js"></script><script src="styles/ContornosdePM10_5_style.js"></script><script src="styles/Contornosdetemperatura_7_style.js"></script>
+        <script src="./layers/layers.js" type="text/javascript"></script> 
+        <script src="./resources/Autolinker.min.js"></script>
+        <script src="./resources/qgis2web.js"></script>
+    </div>  
+    </div>
+
+<div style="color:black;" align="center">Los datos son sintéticos</div>
+    <div class="bbg">&nbsp;</div>
+</div>
+</body>
+
+</html>
